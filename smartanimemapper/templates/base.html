@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartAnimeMapper</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body data-page="{{ page }}">
+  <div class="app-shell">
+    {% if page in ['dashboard', 'settings', 'wizard'] %}
+      <header class="topbar">
+        <div class="brand">SmartAnimeMapper</div>
+        <a class="gear" href="{{ url_for('settings_view') }}" aria-label="Settings">⚙</a>
+      </header>
+    {% endif %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <section class="flash-wrap">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </section>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </div>
+
+  <div id="file-browser-modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <strong>Choose path</strong>
+        <button type="button" class="ghost" onclick="SAM.closeBrowser()">✕</button>
+      </div>
+      <div id="browser-breadcrumb" class="small muted"></div>
+      <div id="browser-list" class="browser-list"></div>
+      <div class="modal-actions">
+        <button type="button" class="secondary" onclick="SAM.closeBrowser()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.SAM_BOOT = {
+      page: {{ page|tojson }}
+    };
+  </script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

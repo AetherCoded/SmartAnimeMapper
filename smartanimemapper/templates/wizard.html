@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel">
+  <h1>Setup Wizard</h1>
+  <p class="muted">Point SmartAnimeMapper at your anime database files. Toggle skip for any product you do not want patched.</p>
+  <form method="post" class="form-grid">
+    <div class="field-group">
+      <label for="sonarr_db">Sonarr database</label>
+      <div class="path-picker">
+        <input id="sonarr_db" name="sonarr_db" type="text" value="{{ settings.paths.sonarr_db }}" placeholder="/sonarr-config/sonarr.db">
+        <button type="button" class="secondary" onclick="SAM.openBrowser('sonarr_db')">Browse</button>
+      </div>
+      <label class="toggle"><input name="sonarr_skip" type="checkbox" {% if settings.products.sonarr.skip %}checked{% endif %}> Skip Sonarr DB patching</label>
+    </div>
+
+    <div class="field-group">
+      <label for="radarr_db">Radarr database</label>
+      <div class="path-picker">
+        <input id="radarr_db" name="radarr_db" type="text" value="{{ settings.paths.radarr_db }}" placeholder="/radarr-config/radarr.db">
+        <button type="button" class="secondary" onclick="SAM.openBrowser('radarr_db')">Browse</button>
+      </div>
+      <label class="toggle"><input name="radarr_skip" type="checkbox" {% if settings.products.radarr.skip %}checked{% endif %}> Skip Radarr DB patching</label>
+    </div>
+
+    <div class="actions split">
+      <a class="button secondary" href="{{ url_for('index') }}">Back</a>
+      <button class="button primary" type="submit">Finish Setup</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

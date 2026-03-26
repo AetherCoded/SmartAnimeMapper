@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel compact-panel">
+  <h1>Settings</h1>
+  <form method="post" action="{{ url_for('settings_save') }}" class="form-grid">
+    <h2>Product databases</h2>
+    <div class="field-group">
+      <label for="sonarr_db">Sonarr database</label>
+      <div class="path-picker">
+        <input id="sonarr_db" name="sonarr_db" type="text" value="{{ settings.paths.sonarr_db }}">
+        <button type="button" class="secondary" onclick="SAM.openBrowser('sonarr_db')">Browse</button>
+      </div>
+      <label class="toggle"><input name="sonarr_skip" type="checkbox" {% if settings.products.sonarr.skip %}checked{% endif %}> Skip Sonarr</label>
+    </div>
+
+    <div class="field-group">
+      <label for="radarr_db">Radarr database</label>
+      <div class="path-picker">
+        <input id="radarr_db" name="radarr_db" type="text" value="{{ settings.paths.radarr_db }}">
+        <button type="button" class="secondary" onclick="SAM.openBrowser('radarr_db')">Browse</button>
+      </div>
+      <label class="toggle"><input name="radarr_skip" type="checkbox" {% if settings.products.radarr.skip %}checked{% endif %}> Skip Radarr</label>
+    </div>
+
+    <h2>Working paths</h2>
+    <div class="field-group">
+      <label for="data_dir">Data directory</label>
+      <input id="data_dir" name="data_dir" type="text" value="{{ settings.paths.data_dir }}">
+    </div>
+    <div class="field-group">
+      <label for="patch_dir">Patch directory</label>
+      <input id="patch_dir" name="patch_dir" type="text" value="{{ settings.paths.patch_dir }}">
+    </div>
+    <div class="field-group">
+      <label for="compiled_patch">Compiled patch file</label>
+      <input id="compiled_patch" name="compiled_patch" type="text" value="{{ settings.paths.compiled_patch }}">
+    </div>
+    <div class="field-group">
+      <label for="anidb_titles_gz">AniDB titles .gz</label>
+      <input id="anidb_titles_gz" name="anidb_titles_gz" type="text" value="{{ settings.paths.anidb_titles_gz }}">
+    </div>
+    <div class="field-group">
+      <label for="anidb_titles_xml">AniDB titles .xml</label>
+      <input id="anidb_titles_xml" name="anidb_titles_xml" type="text" value="{{ settings.paths.anidb_titles_xml }}">
+    </div>
+    <div class="field-group">
+      <label for="kometa_mapping">Kometa mapping file</label>
+      <input id="kometa_mapping" name="kometa_mapping" type="text" value="{{ settings.paths.kometa_mapping }}">
+    </div>
+
+    <h2>Fetch scheduling and throttles</h2>
+    <div class="field-row thirds">
+      <div class="field-group">
+        <label class="toggle"><input name="schedule_enabled" type="checkbox" {% if settings.fetch.schedule.enabled %}checked{% endif %}> Monthly schedule enabled</label>
+      </div>
+      <div class="field-group">
+        <label for="schedule_day_of_month">Day of month</label>
+        <input id="schedule_day_of_month" name="schedule_day_of_month" type="number" min="1" max="28" value="{{ settings.fetch.schedule.day_of_month }}">
+      </div>
+      <div class="field-group">
+        <label for="schedule_hour">Hour</label>
+        <input id="schedule_hour" name="schedule_hour" type="number" min="0" max="23" value="{{ settings.fetch.schedule.hour }}">
+      </div>
+      <div class="field-group">
+        <label for="schedule_minute">Minute</label>
+        <input id="schedule_minute" name="schedule_minute" type="number" min="0" max="59" value="{{ settings.fetch.schedule.minute }}">
+      </div>
+    </div>
+    <div class="field-row halves">
+      <div class="field-group">
+        <label for="anidb_throttle_hours">AniDB throttle hours</label>
+        <input id="anidb_throttle_hours" name="anidb_throttle_hours" type="number" min="1" value="{{ settings.fetch.throttle_hours.anidb_titles }}">
+      </div>
+      <div class="field-group">
+        <label for="kometa_throttle_hours">Kometa throttle hours</label>
+        <input id="kometa_throttle_hours" name="kometa_throttle_hours" type="number" min="1" value="{{ settings.fetch.throttle_hours.kometa_mapping }}">
+      </div>
+    </div>
+    <div class="actions split">
+      <button type="button" class="button secondary" onclick="SAM.fetchNow(true)">Force fetch now</button>
+    </div>
+
+    <h2>Advanced</h2>
+    <div class="field-group">
+      <label class="toggle"><input name="xem_probe_enabled" type="checkbox" {% if settings.advanced.xem_probe_enabled %}checked{% endif %}> Probe XEM during Sonarr compile (slow, best-effort)</label>
+    </div>
+    <div class="field-group">
+      <label for="xem_probe_timeout_seconds">XEM probe timeout seconds</label>
+      <input id="xem_probe_timeout_seconds" name="xem_probe_timeout_seconds" type="number" min="1" value="{{ settings.advanced.xem_probe_timeout_seconds }}">
+    </div>
+
+    <h2>Logs</h2>
+    <div class="field-group">
+      <label for="log_path">Log file location</label>
+      <input id="log_path" name="log_path" type="text" value="{{ settings.paths.log_path }}">
+    </div>
+    <div class="log-actions">
+      <button type="button" class="button secondary" onclick="SAM.refreshLogs()">Refresh logs</button>
+      <button type="button" class="button danger" onclick="SAM.clearLogs()">Clear logs</button>
+    </div>
+    <textarea id="log-viewer" class="log-viewer" readonly>{{ log_text }}</textarea>
+
+    <div class="actions split sticky-actions">
+      <a class="button secondary" href="{{ url_for('index') }}">Back</a>
+      <button class="button primary" type="submit">Save settings</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

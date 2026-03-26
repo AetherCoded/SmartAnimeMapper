@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="panel compact-panel">
+  <h1>Dashboard</h1>
+
+  <div class="field-group readonly-block">
+    <label>Sonarr database path</label>
+    <div class="readonly-value">{{ settings.paths.sonarr_db if not settings.products.sonarr.skip else 'skipped' }}</div>
+  </div>
+
+  <div class="field-group readonly-block">
+    <label>Radarr database path</label>
+    <div class="readonly-value">{{ settings.paths.radarr_db if not settings.products.radarr.skip else 'skipped' }}</div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="card-head">
+      <strong>Database backup</strong>
+      <button class="button secondary tiny" onclick="SAM.backupNow()">Backup now</button>
+    </div>
+    <div class="status-pair"><span>Sonarr last backup made:</span><span id="sonarr-backup-date">{{ status.sonarr_backup_display }}</span></div>
+    <div class="status-pair"><span>Radarr last backup made:</span><span id="radarr-backup-date">{{ status.radarr_backup_display }}</span></div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="card-head">
+      <strong>Source data</strong>
+      <button id="fetch-now-button" class="button secondary tiny" onclick="SAM.fetchNow(false)" {% if not status.fetch_allowed_dashboard %}disabled{% endif %}>Fetch now</button>
+    </div>
+    <div class="status-pair"><span>AniDB titles last grabbed:</span><span id="anidb-fetch-date">{{ status.anidb_fetch_display }}</span></div>
+    <div class="status-pair"><span>Kometa mapping last grabbed:</span><span id="kometa-fetch-date">{{ status.kometa_fetch_display }}</span></div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="card-head">
+      <strong>Compile DB patch</strong>
+      <button class="button secondary tiny" onclick="SAM.compileNow()">Compile patch</button>
+    </div>
+    <div class="status-pair"><span>Latest patch compile:</span><span id="compile-date">{{ status.compiled_patch_display }}</span></div>
+    <div class="progress-wrap">
+      <div class="progress-label" id="compile-progress-label">{{ runtime.tasks.compile.message }}</div>
+      <div class="progress"><div id="compile-progress-bar" class="progress-bar" style="width: {{ runtime.tasks.compile.progress }}%"></div></div>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="card-head">
+      <strong>Patch DB now</strong>
+      <button class="button danger tiny" onclick="SAM.patchNow()">Patch DB now</button>
+    </div>
+    <p class="muted small">Database containers should be offline for patching.</p>
+    <div class="progress-wrap">
+      <div class="progress-label" id="patch-progress-label">{{ runtime.tasks.patch.message }}</div>
+      <div class="progress"><div id="patch-progress-bar" class="progress-bar danger-bar" style="width: {{ runtime.tasks.patch.progress }}%"></div></div>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="card-head">
+      <strong>Recent results</strong>
+    </div>
+    <div id="result-summary" class="small mono">
+      {% if runtime.results.patch %}
+        {{ runtime.results.patch | tojson(indent=2) }}
+      {% elif runtime.results.compile %}
+        {{ runtime.results.compile | tojson(indent=2) }}
+      {% else %}
+        No task results yet.
+      {% endif %}
+    </div>
+    {% if status.log_exists %}
+      <div class="error-callout">Errors were logged. Open Settings to inspect <code>{{ status.log_path }}</code>.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

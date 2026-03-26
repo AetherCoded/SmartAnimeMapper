@@ -1,0 +1,21 @@
+services:
+  smartanimemapper:
+    container_name: SmartAnimeMapper
+    image: smartanimemapper:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8844:8844"
+    environment:
+      TZ: ${TZ:-America/Los_Angeles}
+      SMARTANIMEMAPPER_SECRET: ${SMARTANIMEMAPPER_SECRET:-change-me}
+      ANIDB_API_KEY: ${ANIDB_API_KEY:-}
+      SMARTANIMEMAPPER_CONFIG_DIR: /config
+      SONARR_CONFIG_MOUNT: /sonarr-config
+      RADARR_CONFIG_MOUNT: /radarr-config
+    volumes:
+      - /mnt/user/appdata/smartanimemapper:/config
+      - /mnt/user/appdata/sonarr-anime:/sonarr-config
+      - /mnt/user/appdata/radarr-anime:/radarr-config

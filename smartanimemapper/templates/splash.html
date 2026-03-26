@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="splash-card">
+  <div class="logo-bubble">SAM</div>
+  <h1>SmartAnimeMapper</h1>
+  <p class="muted center">AniDB-aware alias patching for your anime Sonarr and Radarr instances.</p>
+  <div class="hero-actions stacked">
+    <a class="button primary large" href="{{ url_for('wizard') }}">Setup Wizard</a>
+    <a class="button secondary" href="{{ url_for('settings_view') }}">Settings</a>
+  </div>
+</section>
+{% endblock %}
