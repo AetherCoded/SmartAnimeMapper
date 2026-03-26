@@ -27,7 +27,8 @@ class JobManager:
         except Exception:
             tz = ZoneInfo('UTC')
         self.scheduler = BackgroundScheduler(timezone=tz)
-        self.scheduler.add_job(self._scheduled_fetch_guard, 'cron', hour='*', minute='17', id='monthly_fetch_guard', replace_existing=True)
+        # Check once per minute so the user-configured hour/minute can be honored.
+        self.scheduler.add_job(self._scheduled_fetch_guard, 'cron', minute='*', id='monthly_fetch_guard', replace_existing=True)
         self.scheduler.start()
 
     def shutdown(self) -> None:
@@ -42,6 +43,18 @@ class JobManager:
         if self.runtime.task_running('fetch'):
             return
         day_of_month = int(schedule.get('day_of_month', 1))
+        run_hour = int(schedule.get('hour', 4))
+        run_minute = int(schedule.get('minute', 15))
+
+        now_local = datetime.now(self.scheduler.timezone)
+        target_day = max(1, min(day_of_month, 28))
+        if now_local.day < target_day:
+            return
+        if now_local.hour != max(0, min(run_hour, 23)):
+            return
+        if now_local.minute != max(0, min(run_minute, 59)):
+            return
+
         last_anidb = settings['fetch']['last_fetch'].get('anidb_titles')
         last_kometa = settings['fetch']['last_fetch'].get('kometa_mapping')
         if not monthly_fetch_due(last_anidb, day_of_month) and not monthly_fetch_due(last_kometa, day_of_month):
